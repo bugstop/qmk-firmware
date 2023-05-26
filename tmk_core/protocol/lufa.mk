@@ -1,55 +1,48 @@
 LUFA_DIR = protocol/lufa
 
 # Path to the LUFA library
-LUFA_PATH ?= $(LUFA_DIR)/LUFA-git
-
+LUFA_PATH = $(LIB_PATH)/lufa
 
 # Create the LUFA source path variables by including the LUFA makefile
-ifneq (, $(wildcard $(TMK_DIR)/$(LUFA_PATH)/LUFA/Build/lufa_sources.mk))
+ifneq (, $(wildcard $(LUFA_PATH)/LUFA/Build/lufa_sources.mk))
     # New build system from 20120730
     LUFA_ROOT_PATH = $(LUFA_PATH)/LUFA
-    include $(TMK_DIR)/$(LUFA_PATH)/LUFA/Build/lufa_sources.mk 
+    DMBS_LUFA_PATH = $(LUFA_PATH)/LUFA/Build/LUFA
+    include $(LUFA_PATH)/LUFA/Build/lufa_sources.mk
 else
-    include $(TMK_DIR)/$(LUFA_PATH)/LUFA/makefile
+    include $(LUFA_PATH)/LUFA/makefile
 endif
 
-LUFA_SRC = $(LUFA_DIR)/lufa.c \
-	   $(LUFA_DIR)/descriptor.c \
-	   $(LUFA_SRC_USB)
+LUFA_SRC = lufa.c \
+	usb_descriptor.c \
+	$(LUFA_SRC_USB)
 
 ifeq ($(strip $(MIDI_ENABLE)), yes)
-	LUFA_SRC += $(LUFA_DIR)/midi/midi.c \
-	   $(LUFA_DIR)/midi/midi_device.c \
-	   $(LUFA_DIR)/midi/bytequeue/bytequeue.c \
-	   $(LUFA_DIR)/midi/bytequeue/interrupt_setting.c \
-	   $(LUFA_SRC_USBCLASS)
+	LUFA_SRC += $(LUFA_ROOT_PATH)/Drivers/USB/Class/Device/MIDIClassDevice.c
 endif
 
-ifeq ($(strip $(BLUETOOTH_ENABLE)), yes)
-	LUFA_SRC += $(LUFA_DIR)/bluetooth.c \
-	$(TMK_DIR)/protocol/serial_uart.c
+ifeq ($(strip $(VIRTSER_ENABLE)), yes)
+	LUFA_SRC += $(LUFA_ROOT_PATH)/Drivers/USB/Class/Device/CDCClassDevice.c
 endif
 
 SRC += $(LUFA_SRC)
+SRC += $(LUFA_DIR)/usb_util.c
 
 # Search Path
-VPATH += $(TMK_DIR)/$(LUFA_DIR)
-VPATH += $(TMK_DIR)/$(LUFA_PATH)
-
-# Option modules
-#ifdef $(or MOUSEKEY_ENABLE, PS2_MOUSE_ENABLE)
-#endif
-
-#ifdef EXTRAKEY_ENABLE
-#endif
+VPATH += $(TMK_PATH)/$(LUFA_DIR)
+VPATH += $(LUFA_PATH)
 
 # LUFA library compile-time options and predefined tokens
 LUFA_OPTS  = -DUSB_DEVICE_ONLY
 LUFA_OPTS += -DUSE_FLASH_DESCRIPTORS
 LUFA_OPTS += -DUSE_STATIC_OPTIONS="(USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENABLED | USB_OPT_AUTO_PLL)"
-#LUFA_OPTS += -DINTERRUPT_CONTROL_ENDPOINT
-LUFA_OPTS += -DFIXED_CONTROL_ENDPOINT_SIZE=8 
+LUFA_OPTS += -DFIXED_CONTROL_ENDPOINT_SIZE=8
 LUFA_OPTS += -DFIXED_NUM_CONFIGURATIONS=1
+
+# Remote wakeup fix for ATmega16/32U2        https://github.com/tmk/tmk_keyboard/issues/361
+ifneq (,$(filter $(MCU), at90usb162 atmega16u2 atmega32u2))
+	LUFA_OPTS += -DNO_LIMITED_CONTROLLER_CONNECT
+endif
 
 OPT_DEFS += -DF_USB=$(F_USB)UL
 OPT_DEFS += -DARCH=ARCH_$(ARCH)
