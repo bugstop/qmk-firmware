@@ -1,0 +1,55 @@
+name: Build QMK Firmware - macos
+
+on:
+  push:
+    branches:
+    - Keychron-K3Pro
+
+jobs:
+  build_on_macos:
+    name: Setup QMK env on macOS
+    runs-on: macos-latest
+
+    steps:
+    - name: Check out Repo
+      uses: actions/checkout@v3
+
+    - name: Set Upstream
+      run: |
+        echo `date`
+        git remote add upstream https://github.com/qmk/qmk_firmware.git
+        git remote -v
+
+    - name: Update Submodules
+      run:  git submodule update --init --recursive
+
+    - name: Install Homebrew
+      run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    - name: QMK Installation
+      run: brew install qmk/qmk/qmk
+
+    - name: QMK Installation Patch
+      run: |
+        brew tap ArmMbed/homebrew-formulae
+        brew install avr-gcc
+        brew install arm-none-eabi-gcc
+        make lets_split-rev2-default-avrdude
+
+    - name: Run QMK Setup
+      run: qmk setup
+
+    - name: Build Firmware
+      run: qmk compile -kb keychron/k3_pro/ansi/white -km bugstop
+
+    - name: Rename Output
+      run: |
+        echo "ymd=$(date '+%Y%m%d')" >> $GITHUB_ENV
+        cp keychron_k3_pro_ansi_white_bugstop.bin qmk_keychron_k3pro_$(date '+%Y%m%d')_macos.bin
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: qmk-macos-build-result-keychron-k3pro-${{ env.ymd }}
+        path: qmk_keychron_k3pro_${{ env.ymd }}_macos.bin
+        retention-days: 90

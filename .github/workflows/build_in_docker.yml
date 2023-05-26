@@ -1,0 +1,29 @@
+name: Build QMK Firmware - docker
+
+on:
+  push:
+    branches:
+    - Keychron-K3Pro
+
+jobs:
+  build_in_docker:
+    name: Use QMK Docker image
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out Repo
+      uses: actions/checkout@v3
+
+    - name: Build Firmware
+      run: util/docker_build.sh keychron/k3_pro/ansi/white:bugstop
+
+    - name: Rename Output
+      run: |
+        echo "ymd=$(date '+%Y%m%d')" >> $GITHUB_ENV
+        cp keychron_k3_pro_ansi_white_bugstop.bin qmk_keychron_k3pro_$(date '+%Y%m%d')_ubuntu.bin
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: qmk-ubuntu-build-result-keychron-k3pro-${{ env.ymd }}
+        path: qmk_keychron_k3pro_${{ env.ymd }}_ubuntu.bin
+        retention-days: 90
