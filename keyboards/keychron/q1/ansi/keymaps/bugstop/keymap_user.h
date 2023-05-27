@@ -29,9 +29,7 @@ enum layers{
 };
 
 enum custom_keycodes {
-    KC_MISSION_CONTROL = SAFE_RANGE,
-    KC_LAUNCHPAD,
-    KC_SWITCH_LANG,
+    KC_SWITCH_LANG = QK_KB_0,
     KC_LSFT_PO,
     KC_RCTL_PC,
     KC_JB_FORMAT,

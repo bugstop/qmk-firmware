@@ -1,4 +1,4 @@
-name: Build QMK firmware on push
+name: Build QMK Firmware - macos
 
 on:
   push:
@@ -6,13 +6,13 @@ on:
     - Keychron-Q1
 
 jobs:
-  build_firmware:
+  build_on_macos:
+    name: Setup QMK env on macOS
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+    - name: Check out Repo
+      uses: actions/checkout@v3
 
     - name: Set Upstream
       run: |
@@ -45,11 +45,11 @@ jobs:
     - name: Rename Output
       run: |
         echo "ymd=$(date '+%Y%m%d')" >> $GITHUB_ENV
-        cp keychron_q1_rev_0100_bugstop.hex keychron_q1_bugstop_$(date '+%Y%m%d').hex
+        cp keychron_q1_ansi_bugstop.hex qmk_keychron_q1_$(date '+%Y%m%d')_macos.hex
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: qmk-build-result-${{ env.ymd }}
-        path: keychron_q1_bugstop_${{ env.ymd }}.hex
+        name: qmk-macos-build-result-keychron-q1-${{ env.ymd }}
+        path: qmk_keychron_q1_${{ env.ymd }}_macos.hex
         retention-days: 90

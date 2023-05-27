@@ -6,7 +6,7 @@
     "usb": {
     	"vid": "0x3434",
     	"pid": "0x0100",
-    	"device_version": "1.0.0"
+    	"device_version": "23.5.1"
     },
     "processor": "atmega32u4",
     "bootloader": "atmel-dfu",
