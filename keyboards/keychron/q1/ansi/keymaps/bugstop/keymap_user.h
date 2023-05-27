@@ -19,20 +19,19 @@
 // clang-format off
 
 enum layers{
-    L_QWERTY_BASE,  // layer 1: qwerty layout, active if 'mac' is selected
-    L_NO_USE,       // layer 2: DO NOT USE this layer: buggy... not functioning when 'win' is selected
-    L_COLEMAK_BASE, // layer 3: colemak layout, active if 'win' is selected
-    L_SHORTCUTS_A,  // layer 4: [CAPS] shotcuts and macros
-    L_SHORTCUTS_B,  // layer 5: [RSFT] shotcuts and macros
-    L_SHORTCUTS_C,  // layer 6: [CAPS & RSFT] shotcuts and macros
-    L_LIGHTS,       // layer 7: lights control
+    L_QWERTY,  // layer 1: qwerty layout, active if 'mac' is selected
+    L_LIGHTS,  // layer 2: lights control and special keys
+               //   ↑  buggy... not functioning when 'win' is selected
+    L_COLEMAK, // layer 3: colemak layout, active if 'win' is selected
+    L_CAPS,    // layer 4: [CAPS] shortcuts and macros
+    L_RSFT,    // layer 5: [RSFT] shortcuts and macros
+    L_BOTH,    // layer 6: [CAPS & RSFT]
 };
 
 enum custom_keycodes {
     KC_SWITCH_LANG = QK_KB_0,
     KC_LSFT_PO,
     KC_RCTL_PC,
-    KC_JB_FORMAT,
 };
 
 // clang-format on

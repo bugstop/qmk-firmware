@@ -16,11 +16,11 @@
 
 #include "keymap_user.h"
 
-uint16_t KC_LSFT_PO_timer = 0;
-bool KC_LSFT_PO_active = false;
+uint16_t KC_LSFT_PO_timer  = 0;
+bool     KC_LSFT_PO_active = false;
 
-uint16_t KC_RCTL_PC_timer = 0;
-bool KC_RCTL_PC_active = false;
+uint16_t KC_RCTL_PC_timer  = 0;
+bool     KC_RCTL_PC_active = false;
 
 // The very important timer.
 void matrix_scan_user(void) {
@@ -63,16 +63,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_SPC);
             }
             break;
-        case KC_JB_FORMAT:
-            if (record->event.pressed) {
-                register_code(KC_LOPT);
-                register_code(KC_LCMD);
-                tap_code(KC_L);
-            } else {
-                unregister_code(KC_LOPT);
-                unregister_code(KC_LCMD);
-            }
-            break;
         case KC_LSFT_PO:
             if (record->event.pressed) {
                 KC_LSFT_PO_timer = timer_read();
@@ -90,17 +80,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 KC_RCTL_PC_timer = timer_read();
                 KC_RCTL_PC_active = true;
-                if (layer_state_is(L_SHORTCUTS_A)) {
-                    layer_on(L_SHORTCUTS_C);
+                if (layer_state_is(L_CAPS)) {
+                    layer_on(L_BOTH);
                 } else {
-                    layer_on(L_SHORTCUTS_B);
+                    layer_on(L_RSFT);
                 }
             } else {
                 // Right Control when held, ) when tapped
-                if (layer_state_is(L_SHORTCUTS_C)) {
-                    layer_off(L_SHORTCUTS_C);
+                if (layer_state_is(L_BOTH)) {
+                    layer_off(L_BOTH);
                 } else {
-                    layer_off(L_SHORTCUTS_B);
+                    layer_off(L_RSFT);
                 }
                 if (KC_RCTL_PC_active) {
                     register_code(KC_RSFT);
@@ -113,7 +103,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // Space Cadet suppressed
             KC_LSFT_PO_active = false;
             KC_RCTL_PC_active = false;
-            return true;  // Process all other keycodes normally
+            // Process all other keycodes normally
+            return true;
     }
     return false;  // Skip all further processing of this key
 }
