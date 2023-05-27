@@ -1,15 +1,21 @@
 # Quantum Mechanical Keyboard Firmware
 
-This repo is for maintaining my personal keyboard firmware. Note that I am using the [Colemak](https://colemak.com/) keyboard layout.
+This repo is for maintaining my personal keyboard firmware.
 
-## Firmware
+Please note that I am using the [Colemak](https://colemak.com/) keyboard layout.
 
-Firmware are built automatically using [GitHub Actions](https://github.com/features/actions). The `.hex` files can be downloaded [here](https://github.com/bugstop/qmk-firmware/actions/workflows/build_firmware.yml).
+## Firmware Files
+
+Firmware are built automatically using [GitHub Actions](https://github.com/features/actions). Latest files can be downloaded [here](https://github.com/bugstop/qmk-firmware/actions/workflows/build_in_docker.yml).
+
+To make your own firmware, you may want to check out [this script](https://github.com/bugstop/qmk-firmware/blob/main/.github/workflows/build_firmware.yml) to run GitHub Actions. Then, use [QMK Toolbox](https://github.com/qmk/qmk_toolbox) to flash the firmware to keyboards.
 
 ## Keyboard Models
 
 ### [Keychron Q1](https://www.keychron.com/products/keychron-q1)
-[Colemak Layouts (ANSI)](https://github.com/bugstop/qmk-firmware/tree/bugstop_keychron_q1/keyboards/keychron/q1/rev_0100/keymaps/bugstop)
+
+Layout: [ANSI Keymaps](https://github.com/bugstop/qmk-firmware/tree/Keychron-Q1/keyboards/keychron/q1/ansi/keymaps/bugstop)<br>
+Flash information: MCU ATmega32U4, `keychron_q1_ansi_bugstop_*.hex`
 
 ## Official Website
 
