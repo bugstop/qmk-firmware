@@ -16,16 +16,16 @@
 
 #include "keymap_user.h"
 
-uint16_t SECURE_LOCK_timer  = 0;
+// set key pressed timer
+uint16_t SECURE_LOCK_timer = 0;
 
-uint16_t KC_LSFT_PO_timer   = 0;
-bool     KC_LSFT_PO_active  = false;
+uint16_t KC_LSFT_PO_timer  = 0;
+bool     KC_LSFT_PO_active = false;
 
-uint16_t KC_RCTL_PC_timer   = 0;
-bool     KC_RCTL_PC_active  = false;
+uint16_t KC_RCTL_PC_timer  = 0;
+bool     KC_RCTL_PC_active = false;
 
-// The very important timer.
-void matrix_scan_user(void) {
+void scan_key_timer(void) {
     if (KC_LSFT_PO_active) {
         if (timer_elapsed(KC_LSFT_PO_timer) > 200) {
             KC_LSFT_PO_active = false;
@@ -47,23 +47,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     // unlocked
     switch (keycode) {
-        case KC_MISSION_CONTROL:
+        case KC_SECURE:
             if (record->event.pressed) {
-                // when keycode is pressed
-                host_consumer_send(0x29F);
+                SECURE_LOCK_timer = timer_read();
             } else {
-                // when keycode is released
-                host_consumer_send(0);
+                if (timer_elapsed(SECURE_LOCK_timer) > 1000) {
+                    secure_lock();
+                }
             }
             break;
-        case KC_LAUNCHPAD:
-            if (record->event.pressed) {
-                host_consumer_send(0x2A0);
-            } else {
-                host_consumer_send(0);
-            }
-            break;
-        case KC_LANG_CN:
+        case KC_EN_CN:
             if (record->event.pressed) {
                 register_code(KC_LCTL);
                 register_code(KC_SPC);
@@ -72,7 +65,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_SPC);
             }
             break;
-        case KC_LSFT_PO:
+        case KC_LSPO_L:
             if (record->event.pressed) {
                 KC_LSFT_PO_timer = timer_read();
                 KC_LSFT_PO_active = true;
@@ -85,7 +78,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_LSFT);
             }
             break;
-        case KC_RCTL_PC:
+        case KC_RCPC_L:
             if (record->event.pressed) {
                 KC_RCTL_PC_timer = timer_read();
                 KC_RCTL_PC_active = true;
@@ -108,15 +101,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             break;
-        case KC_SECURE:
-            if (record->event.pressed) {
-                SECURE_LOCK_timer = timer_read();
-            } else {
-                if (timer_elapsed(SECURE_LOCK_timer) > 1000) {
-                    secure_lock();
-                }
-            }
-            break;
         default:
             // Space Cadet suppressed
             KC_LSFT_PO_active = false;
@@ -127,6 +111,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return false;  // Skip all further processing of this key
 }
 
+// auto shift functions
 bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
     switch(keycode) {
         // SPECIAL except TAB
@@ -148,4 +133,30 @@ uint16_t get_autoshift_timeout(uint16_t keycode, keyrecord_t *record) {
         default:
             return get_generic_autoshift_timeout();
     }
+}
+
+// leader key functions
+void leader_start_user(void) {
+    // Do something when the leader key is pressed
+}
+
+void leader_end_user(void) {
+    // TODO
+    if (leader_sequence_one_key(KC_F)) {
+        // Leader, f => Types the below string
+        SEND_STRING("QMK is awesome.");
+    } else if (leader_sequence_two_keys(KC_D, KC_D)) {
+        // Leader, d, d => Ctrl+A, Ctrl+C
+        SEND_STRING(SS_LCTL("a") SS_LCTL("c"));
+    } else if (leader_sequence_three_keys(KC_D, KC_D, KC_S)) {
+        // Leader, d, d, s => Types the below string
+        SEND_STRING("https://start.duckduckgo.com\n");
+    } else if (leader_sequence_two_keys(KC_A, KC_S)) {
+        // Leader, a, s => GUI+S
+        tap_code16(LGUI(KC_S));
+    }
+}
+
+void matrix_scan_user(void) {
+    scan_key_timer();
 }
