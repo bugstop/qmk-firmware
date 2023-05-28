@@ -105,4 +105,15 @@
 
 #endif
 
-#define DYNAMIC_KEYMAP_LAYER_COUNT 8
+// via layers
+// #define DYNAMIC_KEYMAP_LAYER_COUNT 8
+
+// secure passcode
+#define SECURE_IDLE_TIMEOUT 0
+#define SECURE_UNLOCK_SEQUENCE { { 3, 1 }, { 3, 2 }, { 3, 3 }, { 3, 4 } }
+
+// auto shift
+#define AUTO_SHIFT_TIMEOUT 150
+#define AUTO_SHIFT_TIMEOUT_PER_KEY
+#define NO_AUTO_SHIFT_ALPHA
+#define NO_AUTO_SHIFT_SPECIAL
