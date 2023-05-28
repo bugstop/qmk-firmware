@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include QMK_KEYBOARD_H
+
 #pragma once
 
 // clang-format off
@@ -29,9 +31,10 @@ enum layers{
 };
 
 enum custom_keycodes {
-    KC_SWITCH_LANG = QK_KB_0,
-    KC_LSFT_PO,
-    KC_RCTL_PC,
+    KC_EN_CN = QK_KB_0,
+    KC_LSPO_L,
+    KC_RCPC_L,
+    KC_SECURE,
 };
 
 // clang-format on

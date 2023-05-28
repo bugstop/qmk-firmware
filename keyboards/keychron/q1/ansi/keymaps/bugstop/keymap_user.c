@@ -16,28 +16,56 @@
 
 #include "keymap_user.h"
 
-uint16_t KC_LSFT_PO_timer  = 0;
-bool     KC_LSFT_PO_active = false;
+// SECURE LOCK when hold
+uint16_t KC_SECURE_timer  = 0;
+bool     KC_SECURE_tapped = false;
 
-uint16_t KC_RCTL_PC_timer  = 0;
-bool     KC_RCTL_PC_active = false;
+// PO when tap, LS when hold
+uint16_t KC_LSPO_L_timer  = 0;
+bool     KC_LSPO_L_tapped = false;
+
+// PC when tap, RC when hold
+uint16_t KC_RCPC_L_timer  = 0;
+bool     KC_RCPC_L_tapped = false;
 
 // The very important timer.
-void matrix_scan_user(void) {
-    if (KC_LSFT_PO_active) {
-        if (timer_elapsed(KC_LSFT_PO_timer) > 200) {
-            KC_LSFT_PO_active = false;
+void scan_key_timer(void) {
+    if (KC_SECURE_tapped) {
+        if (timer_elapsed(KC_SECURE_timer) > 1000) {
+            KC_SECURE_tapped = false;
         }
     }
-    if (KC_RCTL_PC_active) {
-        if (timer_elapsed(KC_RCTL_PC_timer) > 200) {
-            KC_RCTL_PC_active = false;
+    if (KC_LSPO_L_tapped) {
+        if (timer_elapsed(KC_LSPO_L_timer) > 200) {
+            KC_LSPO_L_tapped = false;
+        }
+    }
+    if (KC_RCPC_L_tapped) {
+        if (timer_elapsed(KC_RCPC_L_timer) > 200) {
+            KC_RCPC_L_tapped = false;
         }
     }
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // keyboard locked
+    if (secure_is_locked()) {
+        secure_request_unlock();
+        return false;
+    }
+
+    // unlocked
     switch (keycode) {
+        case KC_SECURE:
+            if (record->event.pressed) {
+                KC_SECURE_timer = timer_read();
+                KC_SECURE_tapped = true;
+            } else {
+                if (!KC_SECURE_tapped) {
+                    secure_lock();
+                }
+            }
+            break;
         case KC_MISSION_CONTROL:
             if (record->event.pressed) {
                 // when keycode is pressed
@@ -54,7 +82,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 host_consumer_send(0);
             }
             break;
-        case KC_SWITCH_LANG:
+        case KC_EN_CN:
             if (record->event.pressed) {
                 register_code(KC_LCTL);
                 register_code(KC_SPC);
@@ -63,23 +91,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_SPC);
             }
             break;
-        case KC_LSFT_PO:
+        case KC_LSPO_L:
             if (record->event.pressed) {
-                KC_LSFT_PO_timer = timer_read();
-                KC_LSFT_PO_active = true;
+                KC_LSPO_L_timer = timer_read();
+                KC_LSPO_L_tapped = true;
                 register_code(KC_LSFT);
             } else {
                 // Left Shift when held, ( when tapped
-                if (KC_LSFT_PO_active) {
+                if (KC_LSPO_L_tapped) {
                     tap_code(KC_9); // (
                 }
                 unregister_code(KC_LSFT);
             }
             break;
-        case KC_RCTL_PC:
+        case KC_RCPC_L:
             if (record->event.pressed) {
-                KC_RCTL_PC_timer = timer_read();
-                KC_RCTL_PC_active = true;
+                KC_RCPC_L_timer = timer_read();
+                KC_RCPC_L_tapped = true;
                 if (layer_state_is(L_CAPS)) {
                     layer_on(L_BOTH);
                 } else {
@@ -92,7 +120,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 } else {
                     layer_off(L_RSFT);
                 }
-                if (KC_RCTL_PC_active) {
+                if (KC_RCPC_L_tapped) {
                     register_code(KC_RSFT);
                     tap_code(KC_0); // )
                     unregister_code(KC_RSFT);
@@ -101,14 +129,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
         default:
             // Space Cadet suppressed
-            KC_LSFT_PO_active = false;
-            KC_RCTL_PC_active = false;
+            KC_LSPO_L_tapped = false;
+            KC_RCPC_L_tapped = false;
             // Process all other keycodes normally
             return true;
     }
     return false;  // Skip all further processing of this key
 }
 
+// auto shift functions
 bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
     switch(keycode) {
         // SPECIAL except TAB
@@ -129,5 +158,27 @@ uint16_t get_autoshift_timeout(uint16_t keycode, keyrecord_t *record) {
         case AUTO_SHIFT_ALPHA:
         default:
             return get_generic_autoshift_timeout();
+    }
+}
+
+// leader key functions
+void leader_start_user(void) {
+    // Do something when the leader key is pressed
+}
+
+void leader_end_user(void) {
+    // TODO
+    if (leader_sequence_one_key(KC_F)) {
+        // Leader, f => Types the below string
+        SEND_STRING("QMK is awesome.");
+    } else if (leader_sequence_two_keys(KC_D, KC_D)) {
+        // Leader, d, d => Ctrl+A, Ctrl+C
+        SEND_STRING(SS_LCTL("a") SS_LCTL("c"));
+    } else if (leader_sequence_three_keys(KC_D, KC_D, KC_S)) {
+        // Leader, d, d, s => Types the below string
+        SEND_STRING("https://start.duckduckgo.com\n");
+    } else if (leader_sequence_two_keys(KC_A, KC_S)) {
+        // Leader, a, s => GUI+S
+        tap_code16(LGUI(KC_S));
     }
 }
