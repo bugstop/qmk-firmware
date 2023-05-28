@@ -40,12 +40,12 @@ jobs:
       run: qmk setup
 
     - name: Build Firmware
-      run: qmk compile -kb keychron/k3_pro/ansi/white -km bugstop
+      run: qmk compile -kb keychron/k3_pro/ansi/rgb -km bugstop
 
     - name: Rename Output
       run: |
         echo "ymd=$(date '+%Y%m%d')" >> $GITHUB_ENV
-        cp keychron_k3_pro_ansi_white_bugstop.bin qmk_keychron_k3pro_$(date '+%Y%m%d')_macos.bin
+        cp keychron_k3_pro_ansi_rgb_bugstop.bin qmk_keychron_k3pro_$(date '+%Y%m%d')_macos.bin
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
