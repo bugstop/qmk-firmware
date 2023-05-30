@@ -14,29 +14,93 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "keymap_user.c"
+#include "keymap_matrix.h"
+
+// tap/hold indicator
+typedef struct IndicatorWithTimeout {
+    uint16_t timeout;
+    uint16_t timer;
+    bool     activated;
+} Indicator;
+
+bool indicator_is_active(Indicator *i) {
+    return i->activated;
+}
+
+void indicator_activate(Indicator *i) {
+    i->timer = timer_read();
+    i->activated = true;
+}
+
+void indicator_deactivate(Indicator *i) {
+    i->activated = false;
+}
+
+void indicator_update(Indicator *i) {
+    uint16_t cost = timer_elapsed(i->timer);
+    if (cost > i->timeout) {
+        indicator_deactivate(i);
+    }
+}
 
 // for rgb indicator when unlocking
-uint16_t SECURE_UNLOCK_timer  = 0;
-bool     SECURE_UNLOCK_tapped = false;
+Indicator SECURE_UNLOCKING = {SECURE_UNLOCK_TIMEOUT, 0, false};
 
+// indicate the unlocking status
+// do not give information on failed attempts
 void scan_secure_timer(void) {
-    if (SECURE_UNLOCK_tapped) {
-        if (timer_elapsed(SECURE_UNLOCK_timer) > SECURE_UNLOCK_TIMEOUT) {
-            SECURE_UNLOCK_tapped = false;
-        }
+    if (indicator_is_active(&SECURE_UNLOCKING)) {
+        indicator_update(&SECURE_UNLOCKING);
     } else if (secure_is_unlocking()) {
-            SECURE_UNLOCK_timer = timer_read();
-            SECURE_UNLOCK_tapped = true;
+        indicator_activate(&SECURE_UNLOCKING);
+    }
+}
+
+void lock_system_and_keyboard(void) {
+    secure_lock();
+    switch(detected_host_os()) {
+    case OS_MACOS:
+    case OS_IOS:
+        tap_code16(LCTL(LCMD(KC_Q)));;
+        break;
+    case OS_WINDOWS:
+        tap_code16(LWIN(KC_L));
+        break;
+    case OS_LINUX:
+        tap_code16(LCTL(LALT(KC_L)));;
+        break;
+    default:
+        break;
+    }
+}
+
+// SECURE LOCK when hold
+Indicator KC_SECURE_TAPPED = {500, 0, false};
+// PO when tap, LS when hold
+Indicator KC_LSPO_L_TAPPED = {200, 0, false};
+// PC when tap, RC when hold
+Indicator KC_RCPC_L_TAPPED = {200, 0, false};
+
+// classified as tapped if hold within a given timeframe
+void scan_key_timer(void) {
+    if (indicator_is_active(&KC_SECURE_TAPPED)) {
+        indicator_update(&KC_SECURE_TAPPED);
+    }
+    if (indicator_is_active(&KC_LSPO_L_TAPPED)) {
+        indicator_update(&KC_LSPO_L_TAPPED);
+    }
+    if (indicator_is_active(&KC_RCPC_L_TAPPED)) {
+        indicator_update(&KC_RCPC_L_TAPPED);
     }
 }
 
 // rgb matrix
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    // secure lock indicator
     if (secure_is_unlocked()) {
-        rgb_matrix_set_color(13, 0x55, 0xFF, 0x11);
-    } else if (SECURE_UNLOCK_tapped) {
-        rgb_matrix_set_color(13, RGB_ORANGE);
+        rgb_matrix_set_color(13, 0x30, 0xD0, 0x10);
+    } else if (indicator_is_active(&SECURE_UNLOCKING)) {
+        rgb_matrix_set_color(13, 0xFF, 0x66, 0x00);
     } else {
         rgb_matrix_set_color(13, 0xFF, 0x00, 0x00);
     }

@@ -20,6 +20,7 @@
 
 // clang-format off
 
+
 enum layers{
     L_QWERTY,  // layer 1: qwerty layout, active if 'mac' is selected
     L_LIGHTS,  // layer 2: lights control and special keys

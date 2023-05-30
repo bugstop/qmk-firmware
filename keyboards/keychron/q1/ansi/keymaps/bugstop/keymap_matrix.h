@@ -14,27 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include QMK_KEYBOARD_H
 
-// rgb
-#define RGB_MATRIX_KEYPRESSES
-#define RGB_MATRIX_FRAMEBUFFER_EFFECTS
-#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_COLOR
-#define RGB_MATRIX_DEFAULT_HUE  133 // 255 * 188deg
-#define RGB_MATRIX_DEFAULT_SAT  230 // 255 * 0.9
-#define RGB_MATRIX_DEFAULT_VAL  255 // 255 * 1.0
-
-// auto shift
-#define AUTO_SHIFT_TIMEOUT 150
-#define AUTO_SHIFT_TIMEOUT_PER_KEY
-#define NO_AUTO_SHIFT_ALPHA
-#define NO_AUTO_SHIFT_SPECIAL
-
-// leader key
-#define LEADER_PER_KEY_TIMING
-#define LEADER_TIMEOUT 350
-
-// secure passcode
-#define SECURE_IDLE_TIMEOUT 0
-#define SECURE_UNLOCK_TIMEOUT 1500
-#define SECURE_UNLOCK_SEQUENCE { { 3, 1 }, { 3, 2 }, { 3, 3 }, { 3, 4 } }
+#include "os_detection.h"
+/*
+detected_host_os() => enum {
+    OS_UNSURE,
+    OS_LINUX,
+    OS_WINDOWS,
+    OS_MACOS,
+    OS_IOS,
+} os_variant_t;
+*/

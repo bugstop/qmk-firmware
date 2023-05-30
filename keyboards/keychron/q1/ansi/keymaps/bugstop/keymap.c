@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "keymap_matrix.c"
+#include "keymap_user.c"
 
 #define KC_TASK  LGUI(KC_TAB)
 #define KC_FLXP  LGUI(KC_E)
