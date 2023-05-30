@@ -107,11 +107,6 @@
 
 #endif
 
-// secure passcode
-#define SECURE_IDLE_TIMEOUT 600000
-#define SECURE_UNLOCK_TIMEOUT 1000
-#define SECURE_UNLOCK_SEQUENCE { { 3, 1 }, { 3, 2 }, { 3, 3 }, { 3, 4 } }
-
 // auto shift
 #define AUTO_SHIFT_TIMEOUT 150
 #define AUTO_SHIFT_TIMEOUT_PER_KEY
@@ -120,10 +115,15 @@
 
 // leader key
 #define LEADER_PER_KEY_TIMING
-#define LEADER_TIMEOUT 250
+#define LEADER_TIMEOUT 350
 
 // mouse keys
 #define MK_3_SPEED
 #define MK_C_OFFSET_0 2
 #define MK_C_OFFSET_1 8
 #define MK_C_OFFSET_2 32
+
+// secure passcode
+#define SECURE_IDLE_TIMEOUT 0
+#define SECURE_UNLOCK_TIMEOUT 1500
+#define SECURE_UNLOCK_SEQUENCE { { 3, 1 }, { 3, 2 }, { 3, 3 }, { 3, 4 } }

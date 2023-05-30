@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "keymap_matrix.c"
+#include "keymap_user.c"
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -24,8 +24,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_PGUP,
      KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,             KC_PGDN,
      KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RSFT,  KC_UP,    QK_LOCK,
-     KC_LCTL,  KC_LOPTN, KC_LCMMD,                               KC_SPC,                       KC_ROPT,  KC_HOME,  KC_END,             KC_LEFT,  KC_DOWN,  KC_RGHT
-// w KC_LCTL,  KC_LGUI,  KC_LALT,                                KC_SPC,                       KC_RALT,  KC_HOME,  KC_END,             KC_LEFT,  KC_DOWN,  KC_RGHT
+     KC_LCTL,  KC_LOPTN, KC_LCMMD,                               KC_SPC,                       QK_LEAD,  KC_HOME,  KC_END,             KC_LEFT,  KC_DOWN,  KC_RGHT
+// w KC_LCTL,  KC_LGUI,  KC_LALT,                                KC_SPC,                       QK_LEAD,  KC_HOME,  KC_END,             KC_LEFT,  KC_DOWN,  KC_RGHT
 ),
 
 [L_LIGHTS] = LAYOUT_ansi_84(
@@ -39,12 +39,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [L_COLEMAK] = LAYOUT_ansi_84(
-     KC_ESC,             KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   QK_LEAD,TT(L_MOUSE),KC_EN_CN,
+     KC_ESC,             KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12, TT(L_MOUSE),KC_SECURE,KC_EN_CN,
      KC_GRV,             KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,            KC_DEL,
      KC_TAB,             KC_Q,     KC_W,     KC_F,     KC_P,     KC_G,     KC_J,     KC_L,     KC_U,     KC_Y,     KC_SCLN,  KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_PGUP,
      LT(L_CAPS,KC_BSPC), KC_A,     KC_R,     KC_S,     KC_T,     KC_D,     KC_H,     KC_N,     KC_E,     KC_I,     KC_O,     KC_QUOT,            KC_ENT,             KC_PGDN,
-     KC_LSPO_L,          KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_K,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RCPC_L,          KC_UP,    KC_SECURE,
-     KC_LCTL,  KC_LOPTN, KC_LCMMD,                               KC_SPC,                                 KC_ROPT,  KC_HOME,  KC_END,             KC_LEFT,  KC_DOWN,  KC_RGHT
+     KC_LSPO_L,          KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_K,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RCPC_L,          KC_UP,    CW_TOGG,
+     KC_LCTL,  KC_LOPTN, KC_LCMMD,                               KC_SPC,                                 QK_LEAD,  KC_HOME,  KC_END,             KC_LEFT,  KC_DOWN,  KC_RGHT
 ),
 
 // when holding KC_CAPS -> command
@@ -88,12 +88,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [L_MOUSE_INPUT] = LAYOUT_ansi_84(
-     TG(L_MOUSE_INPUT),  KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   QK_LEAD,  KC_ESC,   KC_EN_CN,
+     TG(L_MOUSE_INPUT),  KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   KC_ESC,   KC_SECURE,KC_EN_CN,
      KC_GRV,             KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,            KC_DEL,
      KC_TAB,             KC_Q,     KC_W,     KC_F,     KC_P,     KC_G,     KC_J,     KC_L,     KC_U,     KC_Y,     KC_SCLN,  KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_PGUP,
      _______,  KC_A,     KC_R,     KC_S,     KC_T,     KC_D,     KC_H,     KC_N,     KC_E,     KC_I,     KC_O,     KC_QUOT,            KC_ENT,             KC_PGDN,
-     SC_LSPO,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_K,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            SC_RCPC,            KC_UP,    KC_SECURE,
-     KC_LCTL,  KC_LOPTN, KC_LCMMD,                               KC_SPC,                                 KC_ROPT,  KC_HOME,  KC_END,             KC_LEFT,  KC_DOWN,  KC_RGHT
+     SC_LSPO,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_K,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            SC_RCPC,            KC_UP,    CW_TOGG,
+     KC_LCTL,  KC_LOPTN, KC_LCMMD,                               KC_SPC,                                 QK_LEAD,  KC_HOME,  KC_END,             KC_LEFT,  KC_DOWN,  KC_RGHT
 ),
 
 };

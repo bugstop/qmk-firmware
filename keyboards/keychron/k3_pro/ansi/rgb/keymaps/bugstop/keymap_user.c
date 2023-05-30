@@ -14,38 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "keymap_matrix.c"
+
 #include "keymap_user.h"
-
-// SECURE LOCK when hold
-uint16_t KC_SECURE_timer  = 0;
-bool     KC_SECURE_tapped = false;
-
-// PO when tap, LS when hold
-uint16_t KC_LSPO_L_timer  = 0;
-bool     KC_LSPO_L_tapped = false;
-
-// PC when tap, RC when hold
-uint16_t KC_RCPC_L_timer  = 0;
-bool     KC_RCPC_L_tapped = false;
-
-// The very important timer.
-void scan_key_timer(void) {
-    if (KC_SECURE_tapped) {
-        if (timer_elapsed(KC_SECURE_timer) > 1000) {
-            KC_SECURE_tapped = false;
-        }
-    }
-    if (KC_LSPO_L_tapped) {
-        if (timer_elapsed(KC_LSPO_L_timer) > 200) {
-            KC_LSPO_L_tapped = false;
-        }
-    }
-    if (KC_RCPC_L_tapped) {
-        if (timer_elapsed(KC_RCPC_L_timer) > 200) {
-            KC_RCPC_L_tapped = false;
-        }
-    }
-}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // keyboard locked
@@ -56,66 +27,54 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     // unlocked
     switch (keycode) {
-        case KC_SECURE:
-            if (record->event.pressed) {
-                KC_SECURE_timer = timer_read();
-            } else {
-                if (!KC_SECURE_tapped) {
-                    secure_lock();
-                }
+    case KC_SECURE:
+        if (record->event.pressed) {
+            indicator_activate(&KC_SECURE_TAPPED);
+        } else {
+            if (!indicator_is_active(&KC_SECURE_TAPPED)) {
+                lock_system_and_keyboard();
             }
-            break;
-        case KC_EN_CN:
-            if (record->event.pressed) {
-                register_code(KC_LCTL);
-                register_code(KC_SPC);
-                unregister_code(KC_LCTL);
-            } else {
-                unregister_code(KC_SPC);
+        }
+        break;
+    case KC_EN_CN:
+        if (record->event.pressed) {
+            register_code(KC_LCTL);
+            register_code(KC_SPC);
+            unregister_code(KC_LCTL);
+        } else {
+            unregister_code(KC_SPC);
+        }
+        break;
+    case KC_LSPO_L:
+        if (record->event.pressed) {
+            indicator_activate(&KC_LSPO_L_TAPPED);
+            register_code(KC_LSFT);
+        } else {
+            // Left Shift when held, ( when tapped
+            unregister_code(KC_LSFT);
+            if (indicator_is_active(&KC_LSPO_L_TAPPED)) {
+                tap_code16(S(KC_9)); // (
             }
-            break;
-        case KC_LSPO_L:
-            if (record->event.pressed) {
-                KC_LSPO_L_timer = timer_read();
-                KC_LSPO_L_tapped = true;
-                register_code(KC_LSFT);
-            } else {
-                // Left Shift when held, ( when tapped
-                if (KC_LSPO_L_tapped) {
-                    tap_code(KC_9); // (
-                }
-                unregister_code(KC_LSFT);
+        }
+        break;
+    case KC_RCPC_L:
+        if (record->event.pressed) {
+            indicator_activate(&KC_RCPC_L_TAPPED);
+            layer_on(layer_state_is(L_CAPS) ? L_BOTH : L_RSFT);
+        } else {
+            // Right Control when held, ) when tapped
+            layer_off(layer_state_is(L_BOTH) ? L_BOTH : L_RSFT);
+            if (indicator_is_active(&KC_RCPC_L_TAPPED)) {
+                tap_code16(S(KC_0)); // )
             }
-            break;
-        case KC_RCPC_L:
-            if (record->event.pressed) {
-                KC_RCPC_L_timer = timer_read();
-                KC_RCPC_L_tapped = true;
-                if (layer_state_is(L_CAPS)) {
-                    layer_on(L_BOTH);
-                } else {
-                    layer_on(L_RSFT);
-                }
-            } else {
-                // Right Control when held, ) when tapped
-                if (layer_state_is(L_BOTH)) {
-                    layer_off(L_BOTH);
-                } else {
-                    layer_off(L_RSFT);
-                }
-                if (KC_RCPC_L_tapped) {
-                    register_code(KC_RSFT);
-                    tap_code(KC_0); // )
-                    unregister_code(KC_RSFT);
-                }
-            }
-            break;
-        default:
-            // Space Cadet suppressed
-            KC_LSPO_L_tapped = false;
-            KC_RCPC_L_tapped = false;
-            // Process all other keycodes normally
-            return true;
+        }
+        break;
+    default:
+        // suppress Space Cadet if any other key been pressed
+        indicator_deactivate(&KC_LSPO_L_TAPPED);
+        indicator_deactivate(&KC_RCPC_L_TAPPED);
+        // Process all other keycodes normally
+        return true;
     }
     return false;  // Skip all further processing of this key
 }
@@ -123,24 +82,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 // auto shift functions
 bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
     switch(keycode) {
-        // SPECIAL except TAB
-        case KC_MINUS ... KC_SLASH:
-        case KC_NONUS_BACKSLASH:
-            return true;
-        default:
-            return false;
+    // SPECIAL except TAB
+    case KC_MINUS ... KC_SLASH:
+    case KC_NONUS_BACKSLASH:
+        return true;
+    default:
+        return false;
     }
 }
 
 uint16_t get_autoshift_timeout(uint16_t keycode, keyrecord_t *record) {
     switch(keycode) {
-        case AUTO_SHIFT_NUMERIC:
-            return get_generic_autoshift_timeout() + 100;
-        case AUTO_SHIFT_SPECIAL:
-            return get_generic_autoshift_timeout() + 30;
-        case AUTO_SHIFT_ALPHA:
-        default:
-            return get_generic_autoshift_timeout();
+    case AUTO_SHIFT_NUMERIC:
+        return get_generic_autoshift_timeout() + 100;
+    case AUTO_SHIFT_SPECIAL:
+        return get_generic_autoshift_timeout() + 30;
+    case AUTO_SHIFT_ALPHA:
+    default:
+        return get_generic_autoshift_timeout();
     }
 }
 
@@ -149,8 +108,8 @@ void leader_start_user(void) {
     // Do something when the leader key is pressed
 }
 
+// TODO
 void leader_end_user(void) {
-    // TODO
     if (leader_sequence_one_key(KC_F)) {
         // Leader, f => Types the below string
         SEND_STRING("QMK is awesome.");

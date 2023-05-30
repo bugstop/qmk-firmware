@@ -16,26 +16,13 @@
 
 #include QMK_KEYBOARD_H
 
-#pragma once
-
-// clang-format off
-
-enum layers{
-    L_QWERTY,      // layer 1: qwerty layout, active if 'mac' is selected
-    L_LIGHTS,      // layer 2: lights control and special keys
-    L_COLEMAK,     // layer 3: colemak layout, active if 'win' is selected
-    L_CAPS,        // layer 4: [CAPS] shortcuts and macros
-    L_RSFT,        // layer 5: [RSFT] shortcuts and macros
-    L_BOTH,        // layer 6: [CAPS & RSFT]
-    L_MOUSE,       // layer 7: mouse keys
-    L_MOUSE_INPUT, // layer 8: for temporary uses
-};
-
-enum custom_keycodes {
-    KC_SECURE = QK_KB_0,
-    KC_EN_CN,
-    KC_LSPO_L,
-    KC_RCPC_L,
-};
-
-// clang-format on
+#include "os_detection.h"
+/*
+detected_host_os() => enum {
+    OS_UNSURE,
+    OS_LINUX,
+    OS_WINDOWS,
+    OS_MACOS,
+    OS_IOS,
+} os_variant_t;
+*/
