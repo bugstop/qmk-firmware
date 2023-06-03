@@ -32,8 +32,7 @@ enum layers{
 };
 
 enum custom_keycodes {
-    KC_SECURE = QK_KB_0,
-    KC_EN_CN,
+    KC_CSLOCK = QK_KB_0,
     KC_LSPO_L,
     KC_RCPC_L,
 };

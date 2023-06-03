@@ -26,3 +26,12 @@ detected_host_os() => enum {
     OS_IOS,
 } os_variant_t;
 */
+
+#define INDICATOR_RED    0xFF, 0x00, 0x00
+#define INDICATOR_YELLOW 0xFF, 0x66, 0x00
+#define INDICATOR_GREEN  0x30, 0xD0, 0x10
+
+#define INDICATOR_INDEX_POWER 15
+#define INDICATOR_MACRO_POWER 73
+
+#define TAP_MIN_ELAPSED 10

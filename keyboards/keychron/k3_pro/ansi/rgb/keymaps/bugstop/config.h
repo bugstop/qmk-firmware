@@ -107,6 +107,9 @@
 
 #endif
 
+// prevent macro loop
+#define DYNAMIC_MACRO_NO_NESTING
+
 // auto shift
 #define AUTO_SHIFT_TIMEOUT 150
 #define AUTO_SHIFT_TIMEOUT_PER_KEY

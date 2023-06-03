@@ -16,12 +16,16 @@
 
 #include "keymap_matrix.h"
 
-// tap/hold indicator
+// status indicator with timeout
 typedef struct IndicatorWithTimeout {
     uint16_t timeout;
     uint16_t timer;
     bool     activated;
 } Indicator;
+
+uint16_t indicator_elapsed(Indicator *i) {
+    return timer_elapsed(i->timer);
+}
 
 bool indicator_is_active(Indicator *i) {
     return i->activated;
@@ -37,10 +41,14 @@ void indicator_deactivate(Indicator *i) {
 }
 
 void indicator_update(Indicator *i) {
-    uint16_t cost = timer_elapsed(i->timer);
-    if (cost > i->timeout) {
+    if (indicator_elapsed(i) > i->timeout) {
         indicator_deactivate(i);
     }
+}
+
+// tap/hold indicator
+bool indicator_is_tapped(Indicator *i) {
+    return indicator_is_active(i) && indicator_elapsed(i) >= TAP_MIN_ELAPSED;
 }
 
 // for rgb indicator when unlocking
@@ -74,8 +82,39 @@ void lock_system_and_keyboard(void) {
     }
 }
 
-// SECURE LOCK when hold
-Indicator KC_SECURE_TAPPED = {500, 0, false};
+// macro record/replay indicator
+bool MACRO_RECORDING = false;
+
+Indicator MACRO_NO_BUFFER = {500,  0, false};
+Indicator MACRO_REPLAYING = {1000, 0, false};
+
+void dynamic_macro_record_start_user(void) {
+    MACRO_RECORDING = true;
+}
+
+void dynamic_macro_record_end_user(int8_t direction) {
+    MACRO_RECORDING = false;
+}
+
+void dynamic_macro_record_key_user(int8_t direction, keyrecord_t *record) {
+    indicator_activate(&MACRO_NO_BUFFER);
+}
+
+void dynamic_macro_play_user(int8_t direction) {
+    indicator_activate(&MACRO_REPLAYING);
+}
+
+void scan_macro_timer(void) {
+    if (indicator_is_active(&MACRO_NO_BUFFER)) {
+        indicator_update(&MACRO_NO_BUFFER);
+    }
+    if (indicator_is_active(&MACRO_REPLAYING)) {
+        indicator_update(&MACRO_REPLAYING);
+    }
+}
+
+// CAPS LOCK when tap, SECURE LOCK when hold
+Indicator KC_CSLOCK_TAPPED = {500, 0, false};
 // PO when tap, LS when hold
 Indicator KC_LSPO_L_TAPPED = {200, 0, false};
 // PC when tap, RC when hold
@@ -83,8 +122,8 @@ Indicator KC_RCPC_L_TAPPED = {200, 0, false};
 
 // classified as tapped if hold within a given timeframe
 void scan_key_timer(void) {
-    if (indicator_is_active(&KC_SECURE_TAPPED)) {
-        indicator_update(&KC_SECURE_TAPPED);
+    if (indicator_is_active(&KC_CSLOCK_TAPPED)) {
+        indicator_update(&KC_CSLOCK_TAPPED);
     }
     if (indicator_is_active(&KC_LSPO_L_TAPPED)) {
         indicator_update(&KC_LSPO_L_TAPPED);
@@ -98,17 +137,28 @@ void scan_key_timer(void) {
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // secure lock indicator
     if (secure_is_unlocked()) {
-        rgb_matrix_set_color(0, 0x30, 0xD0, 0x10);
-    } else if (indicator_is_active(&SECURE_UNLOCKING)) {
-        rgb_matrix_set_color(0, 0xFF, 0x66, 0x00);
+        if (indicator_is_active(&KC_CSLOCK_TAPPED)) {
+            rgb_matrix_set_color(INDICATOR_INDEX_POWER, INDICATOR_YELLOW);
+        } else {
+            rgb_matrix_set_color(INDICATOR_INDEX_POWER, INDICATOR_GREEN);
+        }
     } else {
-        rgb_matrix_set_color(0, 0xFF, 0x00, 0x00);
+        if (indicator_is_active(&SECURE_UNLOCKING)) {
+            rgb_matrix_set_color(INDICATOR_INDEX_POWER, INDICATOR_YELLOW);
+        } else {
+            rgb_matrix_set_color(INDICATOR_INDEX_POWER, INDICATOR_RED);
+        }
     }
 
-    // caps word indicator
-    if (is_caps_word_on()) {
-        rgb_matrix_set_color(73, 0x30, 0xD0, 0x10);
+    // macro indicator
+    if (indicator_is_active(&MACRO_NO_BUFFER)) {
+        rgb_matrix_set_color(INDICATOR_MACRO_POWER, INDICATOR_YELLOW);
+    } else if (indicator_is_active(&MACRO_REPLAYING)) {
+        rgb_matrix_set_color(INDICATOR_MACRO_POWER, INDICATOR_GREEN);
+    } else if (MACRO_RECORDING) {
+        rgb_matrix_set_color(INDICATOR_MACRO_POWER, INDICATOR_RED);
     }
+
     return false;
 }
 
@@ -120,5 +170,6 @@ void matrix_init_user(void) {
 // loop scan
 void matrix_scan_user(void) {
     scan_secure_timer();
+    scan_macro_timer();
     scan_key_timer();
 }
