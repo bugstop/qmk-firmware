@@ -27,11 +27,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     // unlocked
     switch (keycode) {
-    case KC_SECURE:
+    case KC_CSLOCK:
         if (record->event.pressed) {
-            indicator_activate(&KC_SECURE_TAPPED);
+            indicator_activate(&KC_CSLOCK_TAPPED);
         } else {
-            if (!indicator_is_active(&KC_SECURE_TAPPED)) {
+            if (indicator_is_active(&KC_CSLOCK_TAPPED)) {
+                indicator_deactivate(&KC_CSLOCK_TAPPED);
+                tap_code(KC_CAPS);
+            } else {
                 lock_system_and_keyboard();
             }
         }
@@ -52,13 +55,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             host_consumer_send(0);
         }
         break;
-    case KC_EN_CN:
-        if (record->event.pressed) {
-            register_code16(C(KC_SPC));
-        } else {
-            unregister_code16(C(KC_SPC));
-        }
-        break;
     case KC_LSPO_L:
         if (record->event.pressed) {
             indicator_activate(&KC_LSPO_L_TAPPED);
@@ -66,7 +62,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             // Left Shift when held, ( when tapped
             unregister_code(KC_LSFT);
-            if (indicator_is_active(&KC_LSPO_L_TAPPED)) {
+            if (indicator_is_tapped(&KC_LSPO_L_TAPPED)) {
                 tap_code16(S(KC_9)); // (
             }
         }
@@ -78,7 +74,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             // Right Control when held, ) when tapped
             layer_off(layer_state_is(L_BOTH) ? L_BOTH : L_RSFT);
-            if (indicator_is_active(&KC_RCPC_L_TAPPED)) {
+            if (indicator_is_tapped(&KC_RCPC_L_TAPPED)) {
                 tap_code16(S(KC_0)); // )
             }
         }
@@ -122,8 +118,8 @@ void leader_start_user(void) {
     // Do something when the leader key is pressed
 }
 
+// TODO
 void leader_end_user(void) {
-    // TODO
     if (leader_sequence_one_key(KC_F)) {
         // Leader, f => Types the below string
         SEND_STRING("QMK is awesome.");

@@ -20,7 +20,6 @@
 
 // clang-format off
 
-
 enum layers{
     L_QWERTY,  // layer 1: qwerty layout, active if 'mac' is selected
     L_LIGHTS,  // layer 2: lights control and special keys
@@ -32,10 +31,9 @@ enum layers{
 };
 
 enum custom_keycodes {
-    KC_EN_CN = QK_KB_0,
+    KC_CSLOCK = QK_KB_0,
     KC_LSPO_L,
     KC_RCPC_L,
-    KC_SECURE,
 };
 
 // clang-format on
