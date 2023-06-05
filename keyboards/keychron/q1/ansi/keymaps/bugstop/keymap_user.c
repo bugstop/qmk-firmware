@@ -27,13 +27,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     // unlocked
     switch (keycode) {
-    case KC_CSLOCK:
+    case MY_LANG_LOCK:
         if (record->event.pressed) {
-            indicator_activate(&KC_CSLOCK_TAPPED);
+            indicator_activate(&MY_LANG_LOCK_TAPPED);
         } else {
-            if (indicator_is_active(&KC_CSLOCK_TAPPED)) {
-                indicator_deactivate(&KC_CSLOCK_TAPPED);
-                tap_code(KC_CAPS);
+            if (indicator_is_active(&MY_LANG_LOCK_TAPPED)) {
+                indicator_deactivate(&MY_LANG_LOCK_TAPPED);
+                tap_code16(C(KC_SPC)); // switch input language
             } else {
                 lock_system_and_keyboard();
             }
@@ -55,34 +55,34 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             host_consumer_send(0);
         }
         break;
-    case KC_LSPO_L:
+    case MY_MO_LSPO:
         if (record->event.pressed) {
-            indicator_activate(&KC_LSPO_L_TAPPED);
+            indicator_activate(&MY_MO_LSPO_TAPPED);
             register_code(KC_LSFT);
         } else {
             // Left Shift when held, ( when tapped
             unregister_code(KC_LSFT);
-            if (indicator_is_tapped(&KC_LSPO_L_TAPPED)) {
+            if (indicator_is_tapped(&MY_MO_LSPO_TAPPED)) {
                 tap_code16(S(KC_9)); // (
             }
         }
         break;
-    case KC_RCPC_L:
+    case MY_MO_RCPC:
         if (record->event.pressed) {
-            indicator_activate(&KC_RCPC_L_TAPPED);
+            indicator_activate(&MY_MO_RCPC_TAPPED);
             layer_on(layer_state_is(L_CAPS) ? L_BOTH : L_RSFT);
         } else {
             // Right Control when held, ) when tapped
             layer_off(layer_state_is(L_BOTH) ? L_BOTH : L_RSFT);
-            if (indicator_is_tapped(&KC_RCPC_L_TAPPED)) {
+            if (indicator_is_tapped(&MY_MO_RCPC_TAPPED)) {
                 tap_code16(S(KC_0)); // )
             }
         }
         break;
     default:
         // suppress Space Cadet if any other key been pressed
-        indicator_deactivate(&KC_LSPO_L_TAPPED);
-        indicator_deactivate(&KC_RCPC_L_TAPPED);
+        indicator_deactivate(&MY_MO_LSPO_TAPPED);
+        indicator_deactivate(&MY_MO_RCPC_TAPPED);
         // Process all other keycodes normally
         return true;
     }

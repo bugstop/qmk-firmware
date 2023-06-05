@@ -1,6 +1,8 @@
-BOOTMAGIC_ENABLE    = yes
-SECURE_ENABLE       = yes
-LEADER_ENABLE       = yes
-AUTO_SHIFT_ENABLE   = yes
-OS_DETECTION_ENABLE = yes
-LTO_ENABLE          = yes
+BOOTMAGIC_ENABLE     = yes
+SECURE_ENABLE        = yes
+LEADER_ENABLE        = yes
+DYNAMIC_MACRO_ENABLE = yes
+AUTO_SHIFT_ENABLE    = yes
+MOUSEKEY_ENABLE      = yes
+OS_DETECTION_ENABLE  = yes
+LTO_ENABLE           = yes

@@ -24,6 +24,9 @@
 #define RGB_MATRIX_DEFAULT_SAT  230 // 255 * 0.9
 #define RGB_MATRIX_DEFAULT_VAL  255 // 255 * 1.0
 
+// prevent macro loop
+#define DYNAMIC_MACRO_NO_NESTING
+
 // auto shift
 #define AUTO_SHIFT_TIMEOUT 150
 #define AUTO_SHIFT_TIMEOUT_PER_KEY
@@ -33,6 +36,12 @@
 // leader key
 #define LEADER_PER_KEY_TIMING
 #define LEADER_TIMEOUT 350
+
+// mouse keys
+#define MK_3_SPEED
+#define MK_C_OFFSET_0 2
+#define MK_C_OFFSET_1 8
+#define MK_C_OFFSET_2 32
 
 // secure passcode
 #define SECURE_IDLE_TIMEOUT 0
