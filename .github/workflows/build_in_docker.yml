@@ -14,12 +14,12 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Build Firmware
-      run: util/docker_build.sh keychron/q1/ansi:bugstop
+      run: util/docker_build.sh keychron/q1/ansi:customized
 
     - name: Rename Output
       run: |
         echo "ymd=$(date '+%Y%m%d')" >> $GITHUB_ENV
-        cp keychron_q1_ansi_bugstop.hex qmk_keychron_q1_$(date '+%Y%m%d')_ubuntu.hex
+        cp keychron_q1_ansi_customized.hex qmk_keychron_q1_$(date '+%Y%m%d')_ubuntu.hex
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3

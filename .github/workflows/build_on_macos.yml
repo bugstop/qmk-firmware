@@ -40,12 +40,12 @@ jobs:
       run: qmk setup
 
     - name: Build Firmware
-      run: qmk compile -kb keychron/q1/ansi -km bugstop
+      run: qmk compile -kb keychron/q1/ansi -km customized
 
     - name: Rename Output
       run: |
         echo "ymd=$(date '+%Y%m%d')" >> $GITHUB_ENV
-        cp keychron_q1_ansi_bugstop.hex qmk_keychron_q1_$(date '+%Y%m%d')_macos.hex
+        cp keychron_q1_ansi_customized.hex qmk_keychron_q1_$(date '+%Y%m%d')_macos.hex
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
