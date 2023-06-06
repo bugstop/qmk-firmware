@@ -6,7 +6,7 @@
     "usb": {
     	"vid": "0x3434",
     	"pid": "0x0610",
-    	"device_version": "23.6.0"
+    	"device_version": "23.6.2"
     },
     "encoder": {
         "rotary": [

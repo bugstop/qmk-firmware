@@ -27,12 +27,15 @@ enum layers{
     L_CAPS,        // layer 4: [CAPS] shortcuts and macros
     L_RSFT,        // layer 5: [RSFT] shortcuts and macros
     L_BOTH,        // layer 6: [CAPS & RSFT]
+    L_VIMRC,       // layer 7: some vim codes from my vimrc
+    L_MOUSE,       // layer 8: mouse control
+    L_MOUSE_INPUT, // layer 9: mouse mode input
 };
 
 enum custom_keycodes {
-    KC_CSLOCK = QK_KB_0,
-    KC_LSPO_L,
-    KC_RCPC_L,
+    MY_LANG_LOCK = QK_KB_0,
+    MY_MO_LSPO,
+    MY_MO_RCPC,
 };
 
 // clang-format on
