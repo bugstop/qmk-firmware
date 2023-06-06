@@ -114,22 +114,22 @@ void scan_macro_timer(void) {
 }
 
 // CAPS LOCK when tap, SECURE LOCK when hold
-Indicator KC_CSLOCK_TAPPED = {500, 0, false};
+Indicator MY_LANG_LOCK_TAPPED = {500, 0, false};
 // PO when tap, LS when hold
-Indicator KC_LSPO_L_TAPPED = {200, 0, false};
+Indicator MY_MO_LSPO_TAPPED = {200, 0, false};
 // PC when tap, RC when hold
-Indicator KC_RCPC_L_TAPPED = {200, 0, false};
+Indicator MY_MO_RCPC_TAPPED = {200, 0, false};
 
 // classified as tapped if hold within a given timeframe
 void scan_key_timer(void) {
-    if (indicator_is_active(&KC_CSLOCK_TAPPED)) {
-        indicator_update(&KC_CSLOCK_TAPPED);
+    if (indicator_is_active(&MY_LANG_LOCK_TAPPED)) {
+        indicator_update(&MY_LANG_LOCK_TAPPED);
     }
-    if (indicator_is_active(&KC_LSPO_L_TAPPED)) {
-        indicator_update(&KC_LSPO_L_TAPPED);
+    if (indicator_is_active(&MY_MO_LSPO_TAPPED)) {
+        indicator_update(&MY_MO_LSPO_TAPPED);
     }
-    if (indicator_is_active(&KC_RCPC_L_TAPPED)) {
-        indicator_update(&KC_RCPC_L_TAPPED);
+    if (indicator_is_active(&MY_MO_RCPC_TAPPED)) {
+        indicator_update(&MY_MO_RCPC_TAPPED);
     }
 }
 
@@ -137,7 +137,7 @@ void scan_key_timer(void) {
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // secure lock indicator
     if (secure_is_unlocked()) {
-        if (indicator_is_active(&KC_CSLOCK_TAPPED)) {
+        if (indicator_is_active(&MY_LANG_LOCK_TAPPED)) {
             rgb_matrix_set_color(INDICATOR_INDEX_POWER, INDICATOR_YELLOW);
         } else {
             rgb_matrix_set_color(INDICATOR_INDEX_POWER, INDICATOR_GREEN);
