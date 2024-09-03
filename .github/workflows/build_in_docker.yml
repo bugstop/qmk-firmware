@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out Repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Build Firmware
       run: util/docker_build.sh keychron/q1_pro/ansi_knob:customized
@@ -22,7 +22,7 @@ jobs:
         cp keychron_q1_pro_ansi_knob_customized.bin qmk_keychron_q1pro_$(date '+%Y%m%d')_ubuntu.bin
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: qmk-ubuntu-build-result-keychron-q1pro-${{ env.ymd }}
         path: qmk_keychron_q1pro_${{ env.ymd }}_ubuntu.bin
