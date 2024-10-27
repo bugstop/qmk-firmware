@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Check out Repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set Upstream
       run: |
@@ -32,8 +32,7 @@ jobs:
     - name: QMK Installation Patch
       run: |
         brew tap ArmMbed/homebrew-formulae
-        brew install avr-gcc
-        brew install arm-none-eabi-gcc
+        brew install avr-gcc gcc-arm-embedded
         make lets_split-rev2-default-avrdude
 
     - name: Run QMK Setup
@@ -48,7 +47,7 @@ jobs:
         cp keychron_k3_pro_ansi_rgb_customized.bin qmk_keychron_k3pro_$(date '+%Y%m%d')_macos.bin
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: qmk-macos-build-result-keychron-k3pro-${{ env.ymd }}
         path: qmk_keychron_k3pro_${{ env.ymd }}_macos.bin
