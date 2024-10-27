@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out Repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Build Firmware
       run: util/docker_build.sh keychron/q1/ansi:customized
@@ -22,7 +22,7 @@ jobs:
         cp keychron_q1_ansi_customized.hex qmk_keychron_q1_$(date '+%Y%m%d')_ubuntu.hex
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: qmk-ubuntu-build-result-keychron-q1-${{ env.ymd }}
         path: qmk_keychron_q1_${{ env.ymd }}_ubuntu.hex
